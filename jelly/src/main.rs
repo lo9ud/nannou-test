@@ -58,7 +58,7 @@ fn view(app: &App, model: &Model, frame: Frame) {
     let draw = app.draw();
     draw.background().color(BLACK);
     for jelly in model.jellies.iter() {
-        jelly.display(&draw);
+        jelly.draw(&draw);
     }
 
     let win = app.window_rect();
