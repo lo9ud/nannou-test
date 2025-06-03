@@ -76,12 +76,14 @@ fn model(app: &App) -> Model {
 fn collide(a: &mut ball::Ball, b: &mut ball::Ball) {
     let vcom = (a.velocity * a.mass() + b.velocity * b.mass()) / (a.mass() + b.mass());
 
-    let a_v = (a.mass() - b.mass())/(a.mass() + b.mass()) * a.velocity + (2.0 * b.mass())/(a.mass() + b.mass()) * b.velocity;
-    let b_v = (b.mass() - a.mass())/(a.mass() + b.mass()) * b.velocity + (2.0 * a.mass())/(a.mass() + b.mass()) * a.velocity;
+    let a_v = (a.mass() - b.mass()) / (a.mass() + b.mass()) * a.velocity
+        + (2.0 * b.mass()) / (a.mass() + b.mass()) * b.velocity;
+    let b_v = (b.mass() - a.mass()) / (a.mass() + b.mass()) * b.velocity
+        + (2.0 * a.mass()) / (a.mass() + b.mass()) * a.velocity;
 
     // a.velocity = a_v;
     // b.velocity = b_v;
-    
+
     a.velocity = (1.0 + ELASTICITY) * vcom - ELASTICITY * a.velocity;
     b.velocity = (1.0 + ELASTICITY) * vcom - ELASTICITY * b.velocity;
 
@@ -159,17 +161,17 @@ fn event(_app: &App, model: &mut Model, event: Event) {
                 model.gravity = Drag::Getting;
             }
             WindowEvent::MouseReleased(MouseButton::Left) => {
-                if let (Drag::Dragging(start), Drag::Dragging(end)) = (&model.drag_init, &model.drag_end) {
-                    let v= (*start - *end)/50.0;
+                if let (Drag::Dragging(start), Drag::Dragging(end)) =
+                    (&model.drag_init, &model.drag_end)
+                {
+                    let v = (*start - *end) / 50.0;
                     let p = *end;
                     let radius = 15.0;
                     let colour = rgb(255, 255, 255);
                     model.balls.push(ball::Ball::new(p, v, radius, colour));
-                    
                 }
                 model.drag_end = Drag::None;
                 model.drag_init = Drag::None;
-                
             }
             WindowEvent::MouseReleased(MouseButton::Right) => {
                 model.gravity = Drag::None;
@@ -179,8 +181,9 @@ fn event(_app: &App, model: &mut Model, event: Event) {
                     model.drag_init = Drag::Dragging(pos);
                 }
                 model.drag_end = Drag::Dragging(pos);
-                    if let Drag::Getting = model.gravity {
-                    model.gravity = Drag::Dragging(pos);}
+                if let Drag::Getting = model.gravity {
+                    model.gravity = Drag::Dragging(pos);
+                }
                 if let Drag::Dragging(_) = model.gravity {
                     model.gravity = Drag::Dragging(pos);
                 }
@@ -198,7 +201,7 @@ fn view(app: &App, model: &Model, frame: Frame) {
         draw.arrow()
             .start(*end)
             .end(*start)
-            .weight(start.distance(*end)/50.0)
+            .weight(start.distance(*end) / 50.0)
             .color(RED);
     }
     for ball in &model.balls {

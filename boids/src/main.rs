@@ -4,7 +4,7 @@ use boids::{behaviour::BoidBehaviour, boid::Boid};
 use nannou::prelude::*;
 
 fn main() {
-    nannou::app(model).update(update).simple_window(view).run();
+    nannou::app(model).update(update).simple_window(view).fullscreen().run();
 }
 
 #[derive(Debug)]
@@ -59,7 +59,7 @@ fn model(_app: &App) -> Model {
     let r = 500.0;
     let mut boids: Vec<Boid> = vec![];
     // for (behaviour, n) in groups {
-    for _i in 0..12 {
+    for _i in 0..18 {
         let behaviour = BoidBehaviour::random();
         let n = (rand::random::<f32>() * 12f32 + 8f32).round() as u32;
         for i in 0..n {

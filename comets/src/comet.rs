@@ -28,16 +28,6 @@ pub struct CometBehaviour {
     pub mass: f32,
     /// The rotation force is a force that rotates the comet around the center of the screen
     pub rotation: f32,
-
-    // Technical
-    /// The maximum number of comets that a comet can be attracted to
-    pub max_local_comets: usize,
-    /// A filter function that determines which comets a comet can be attracted to
-    pub filter_fn: fn(this: &Comet, that: &Comet) -> bool,
-    /// A sort function that determines the order in which comets are considered for attraction
-    pub sort_fn: fn(this: &Comet, that: &Comet) -> i32,
-    /// The group of the comet (used to determine which comets can be attracted to each other)
-    pub group: u32,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -70,16 +60,6 @@ impl Comet {
         }
     }
     pub fn draw(&self, draw: &draw::Draw) {
-        // draw.ellipse()
-        //     .x_y(self.position.x, self.position.y)
-        //     .w_h(
-        //         self.behaviour.mass
-        //             * (self.behaviour.length / (self.behaviour.width + self.behaviour.length)),
-        //         self.behaviour.mass
-        //             * (self.behaviour.width / (self.behaviour.width + self.behaviour.length)),
-        //     )
-        //     .rotate(-self.velocity.angle_between(vec2(1.0, 0.0)))
-        //     .color(self.behaviour.color);
         draw.line()
             .start(self.last)
             .end(self.position)
@@ -89,15 +69,23 @@ impl Comet {
     }
 
     pub fn update(&mut self, delta: f64, comets: &[Comet]) {
+        if self.position.length() > 300.0 {
+            self.position = self.position.normalize() * 299.8;
+            self.velocity = self.velocity - self.velocity.project_onto(self.position.normalize());
+            return;
+        }
         let mut comets = comets
             .iter()
             .filter(|comet| comet.id != self.id)
             .collect::<Vec<_>>();
-        comets.sort_by_key(|comet| (self.behaviour.sort_fn)(self, &comet));
+        comets.sort_by(|a, b| {
+                let distance_a = (a.position - self.position).length();
+                let distance_b = (b.position - self.position).length();
+                distance_a.partial_cmp(&distance_b).unwrap()
+            });
+        comets = comets.iter().take(6).cloned().collect::<Vec<_>>();
         let attraction_force = comets
             .iter()
-            .filter(|that| (self.behaviour.filter_fn)(self, that))
-            .take(self.behaviour.max_local_comets)
             .filter(|comet| comet.id != self.id)
             .map(|comet| {
                 let distance = (comet.position - self.position).length();
