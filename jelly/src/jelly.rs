@@ -1,15 +1,21 @@
 use nannou::prelude::*;
 
 const PULSE_AGGRESSION: u8 = 7;
+
 fn raw_pulse(t: f32) -> f32 {
     -(t) * (t - 1.0) * (t + 1.0).powi(PULSE_AGGRESSION as i32)
 }
 
 fn pulse(t: f32) -> f32 {
     let t = t % 1.0;
-    let a = PULSE_AGGRESSION as f32;
-    let ajust = 0.5 * (a.powi(2) + 2.0 * a + 9.0).sqrt() / (a + 2.0) + 0.5 * (a - 1.0) / (a + 2.0);
-    raw_pulse(t) / raw_pulse(ajust)
+    if t>0.5 {
+        return raw_pulse(1.0 - t);
+    } else {
+        return raw_pulse(t);
+    }
+    // let a = PULSE_AGGRESSION as f32;
+    // let ajust = 0.5 * (a.powi(2) + 2.0 * a + 9.0).sqrt() / (a + 2.0) + 0.5 * (a - 1.0) / (a + 2.0);
+    // raw_pulse(t) / raw_pulse(ajust)
 }
 
 pub struct DrawSettings {
@@ -67,7 +73,10 @@ pub struct Jelly {
 impl Jelly {
     pub fn update(&mut self) {
         self.movement.update();
-        self.position += self.velocity * self.movement.impetus();
+        self.direction = nannou::window::Window::;
+        self.velocity += vec2(0.0, self.movement.impetus()).rotate(self.direction);
+        self.velocity *= 0.80;
+        self.position += self.velocity;
     }
     pub fn draw(&self, draw: &nannou::draw::Draw) {
         draw.ellipse()

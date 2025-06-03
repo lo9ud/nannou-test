@@ -1,0 +1,4 @@
+[workspace]
+resolver = "2"
+members = ["./*", "ants", "collisions", "fourier", "waves"]
+exclude = [".git", ".github", "target"]
